@@ -78,6 +78,7 @@ solAn  = rfp.solveNewtonRFP(sol);
 LC     = LimitCycle(['E0=',num2str(yApex)],solAn,rfp);
 
 %% run Continuation in E0= E bar
+tic
 % jump over simple bifurcations to explore M_0, M_1 and M_4
 arcPC  = PseudoArclengthPC(rfp,LC);
 target = 2.4; % E_bar = E_0 = 2.4
@@ -89,11 +90,11 @@ target = 2.4; % E_bar = E_0 = 2.4
 [LCBefore,LCAfter] = LCBif1.findNextBifurcation();
 [LCBif2, flag2]    = arcPC.approximateRoot(LCBefore,LCAfter, 'detJacAug'); 
 
-% get new gaits on new strata
+% get new gaits on new generators
 [LC_M2,LC_M3] = arcPC.branchingOff(LCBif1);
 [LC_M5,LC_M6] = arcPC.branchingOff(LCBif2);
 
-% initialize new strata
+% initialize new generators
 M2 = copy(LC_M2);
 M2.disconnectLC;
 M3 = copy(LC_M3);
@@ -103,7 +104,7 @@ M5.disconnectLC;
 M6 = copy(LC_M6);
 M6.disconnectLC;
 
-% explore strata
+% explore generators
 % save trajectory of gaits at E_0 = E_bar = 1.8
 GaitTrajectories_18 = cell(7,1);
 M = {M2,M3,M5,M6};
@@ -126,6 +127,8 @@ arcPC_4  = PseudoArclengthPC(rfp,lc4);
 target = 1.8; % E_bar = E_0 = 1.8
 arcPC_4.runContinuation('E0',target);
 GaitTrajectories_18{4} = lc4.getTrajectory(3e-2);
+
+toc
 
 %% extract data from strata
 M0 = LC.getContinuationData;
