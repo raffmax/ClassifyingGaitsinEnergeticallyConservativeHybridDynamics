@@ -19,7 +19,7 @@ for iDomain = 1:size(data,2)
     F(length(data(iDomain).t)) = struct('cdata',[],'colormap',[]); 
     frame_counter = 1;
     for i=1:length(data(iDomain).t)
-        state_ = data(iDomain).x(i,:)';
+        state_ = [data(iDomain).x(i,1:2),0,data(iDomain).x(i,3:6),0,data(iDomain).x(i,7:8)]';
         z      = data(iDomain).z(i,:)';
         
         update(hopper_graphic, state_');

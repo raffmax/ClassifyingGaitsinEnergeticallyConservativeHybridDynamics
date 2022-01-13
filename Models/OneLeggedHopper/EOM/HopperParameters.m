@@ -28,7 +28,6 @@ classdef HopperParameters < handle
         m       % total mass
         m_t     % mass of torso / upper body relative to m
         m_f     % mass of foot  / lower body relative to m
-        theta_t % torso inertia 
         g       % gravity
         l_0     % natural length of spring
         k_l     % leg spring stiffness
@@ -55,7 +54,6 @@ classdef HopperParameters < handle
             this.m_t        = this.param_m_t(epsilon);
             this.g          = this.param_g(epsilon);
             this.l_0        = this.param_l_0(epsilon);
-            this.theta_t    = this.param_theta_t(epsilon);
             this.k_l        = this.param_k_l(epsilon);
             this.k_h        = this.param_k_h(epsilon);
         end
@@ -73,12 +71,6 @@ classdef HopperParameters < handle
         end
         function l_0 = param_l_0(~,~)
             l_0 = 1;
-        end
-        function theta_t = param_theta_t(this,epsilon)
-            l_0 = this.l_0;
-            r   = l_0; % radius of gyration
-            m_t = this.param_m_t(epsilon);
-            theta_t = m_t*r^2;
         end
         function k_l = param_k_l(~,~)
             k_l = 40;

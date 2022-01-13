@@ -11,9 +11,9 @@ l_0     = obj.parameters.l_0;
 
 [~,lambda,~, lambdaGrad] = obj.FlowMap(t, x, z, T, controller, Grad1, Grad2, epsFix);
 
-F_l = k_l*(l_0-x(5)); % joint force
+F_l = k_l*(l_0-x(4)); % joint force
 
-fun = epsilon*lambda(2) + (1-epsilon)*F_l*cos(x(3)+x(4));
+fun = epsilon*lambda(2) + (1-epsilon)*F_l*cos(x(3));
 
 if ~Grad1 
     grad_x   = 0;
@@ -22,10 +22,10 @@ if ~Grad1
     grad_t   = 0;
     grad_T   = 0;
 else
-    F_l_x   = [0,0,0,0,-k_l, 0,0,0,0,0];
+    F_l_x   = [0,0,0,-k_l, 0,0,0,0];
     
-    grad_x  = epsilon*lambdaGrad.lambda_x(2,:)+(1-epsilon)*F_l_x*cos(x(3)+x(4))...
-              -(1-epsilon)*F_l*sin(x(3)+x(4))*[0 0 1 1 zeros(1,6)];
+    grad_x  = epsilon*lambdaGrad.lambda_x(2,:)+(1-epsilon)*F_l_x*cos(x(3))...
+              -(1-epsilon)*F_l*sin(x(3))*[0 0 1 zeros(1,5)];
     grad_xi = epsilon*lambdaGrad.lambda_xi(2,:);
     grad_eps = [];
     grad_t   = 0;

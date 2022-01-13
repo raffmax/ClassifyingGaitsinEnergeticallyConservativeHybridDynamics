@@ -29,8 +29,8 @@ function model = generateEOMhopper(model)
     disp('Computing function handles for One Legged Hopper')
     %% --- Variables ---
     %  - generalized coor./vel. -
-    syms x y phi l             real
-    syms dx dy dphi dalpha dl  real  
+    syms x y l             real
+    syms dx dy dalpha dl  real  
     alpha   = sym('alpha','real'); 
     
     epsilon = sym('epsilon','real');
@@ -38,7 +38,6 @@ function model = generateEOMhopper(model)
     % - model parameters -
     m_t     = sym('m_t','real');    % mass of upper body / torso
     m_f     = sym('m_f','real');    % mass of foot / lower body
-    theta_t = sym('theta_t','real');
     g       = sym('g','real');      % gravity
     l_0     = sym('l_0','real');    % natural length of spring
     k_l     = sym('k_l','real');      % spring stiffness
@@ -49,14 +48,14 @@ function model = generateEOMhopper(model)
 
     %% --- Vector Composition ---
     %  - generalized coor./vel. -
-    q  = [x y phi alpha l]; %#ok<NODEF>
-    dq = [dx dy dphi dalpha dl];
+    q  = [x y alpha l]; %#ok<NODEF>
+    dq = [dx dy dalpha dl];
 
     %  - discrete states -
     z = [z_S z_F];
     
     %  constraint functionals
-    con_S = [x+l*sin(phi+alpha);y-l*cos(phi+alpha)];   % constraint during stance
+    con_S = [x+l*sin(alpha);y-l*cos(alpha)];   % constraint during stance
     con_F = l-l_0; % constraint during flight
     
     %% --- Abbreviations ---
@@ -67,8 +66,7 @@ function model = generateEOMhopper(model)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% --- Kinematics ---
     % CoG-positions (from kinematics):
-    Angle_t   = phi;
-    Angle_f   = Angle_t+alpha;
+    Angle_f   = alpha;
     CoG_t     = [x;y];
     CoG_f     = CoG_t + l* [sin(Angle_f);-cos(Angle_f)];
     
@@ -76,7 +74,6 @@ function model = generateEOMhopper(model)
     d_CoG_t   = jacobian(CoG_t,q)*dq.';
     d_CoG_f   = jacobian(CoG_f,q)*dq.';
     
-    d_Angle_t   = jacobian(Angle_t,q)*dq.';
     d_Angle_f   = jacobian(Angle_f,q)*dq.';
     
     %  - Potential Energy (due to gravity) -
@@ -85,8 +82,7 @@ function model = generateEOMhopper(model)
     V_spring  = 0.5*k_l*(l_0-l).^2 + 0.5*k_h*(0-alpha).^2;
     % Kinetic Energy:         
     T = 0.5 * (m_t     * sum(d_CoG_t.^2) + ...
-               m_f     * sum(d_CoG_f.^2) + ...
-               theta_t * sum(d_Angle_t.^2));
+               m_f     * sum(d_CoG_f.^2));
     
     V         = V_grav + V_spring;
               
@@ -102,8 +98,8 @@ function model = generateEOMhopper(model)
 
     %% --- Projection Matricies ---
 
-    B = [[0;0;0;1;0],...
-        [ -(1-epsilon)*sin(phi+alpha);(1-epsilon)*cos(phi+alpha) ;0; 0 ; epsilon ]];
+    B = [[0;0;1;0],...
+        [ -(1-epsilon)*sin(alpha);(1-epsilon)*cos(alpha) ;0; epsilon ]];
 
     tau_J = B*[FspringH;FspringL];
                         
@@ -120,15 +116,14 @@ function model = generateEOMhopper(model)
     l_0        = p.l_0;
     m_f        = p.m_f;
     m_t        = p.m_t;
-    theta_t    = p.theta_t;
     k_l        = p.k_l;
     k_h        = p.k_h;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % --- Trafo ---
-    D      = diag([1, 1, 1, 1/epsilon, 1/epsilon]);
+    D      = diag([1, 1, 1/epsilon, 1/epsilon]);
     M      = simplify(expand(subs(D*M)));
-    B      = [[0;0;0;1;0],[ -(1-epsilon)*sin(phi+alpha)*z_S;(1-epsilon)*cos(phi+alpha)*z_S;0 ;0 ; 1 ]];%simplify(expand(subs(D*B)));
+    B      = [[0;0;1;0],[ -(1-epsilon)*sin(alpha)*z_S;(1-epsilon)*cos(alpha)*z_S;0 ; 1 ]];%simplify(expand(subs(D*B)));
     tau_J  = simplify(expand(subs(D*tau_J)));
     h      = simplify(expand(subs(D*h)));
     Wdyn_S = simplify(subs(D*W_S*epsilon));
@@ -152,7 +147,7 @@ function model = generateEOMhopper(model)
     x                 = [q;dq];
     
     %  define n-dimensional vector
-    vec_n       = sym('vec_n', [5, 1]);
+    vec_n       = sym('vec_n', [4, 1]);
 
     lambda1      = sym('lambda1', [1, 1]);
     lambda2      = sym('lambda2', [2, 1]);

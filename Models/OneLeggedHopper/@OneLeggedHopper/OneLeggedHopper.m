@@ -32,7 +32,7 @@ classdef OneLeggedHopper < MechanicalModel
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     properties (Constant)
         nZ   = 2       % number of (physical) constraints
-        nQ   = 5       % number of generalized coordinates
+        nQ   = 4       % number of generalized coordinates
         nTau = 2       % number of actuators
         
         nLambda     = [2 1];  % size of constraint forces
