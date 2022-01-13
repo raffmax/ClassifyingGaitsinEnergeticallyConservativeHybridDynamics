@@ -1,5 +1,5 @@
-# ClassifyingGaitsinEnergeticallyConservativeHybridDynamics
-This file provides the code to generate the data and animations depicted in "Classifying Gaits in Energetically Conservative Hybrid Dynamics".
+# ConnectingGaitsinEnergeticallyConservativeLeggedSystems
+This file provides the code to generate the data and animations depicted in "Connecting Gaits in Energetically Conservative Legged Systems".
 
 The main executable file is "demo_OneLeggedHopper.m"
 
